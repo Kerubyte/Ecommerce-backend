@@ -1,0 +1,1 @@
+rootProject.name = "com.kerubyte.ecommerce-backend"

@@ -1,0 +1,9 @@
+/.idea
+.idea
+.idea/*
+/.idea/*
+/.gradle
+.gradle
+/.cashes-jvm/*
+/build/kotlin/compileTestKotlin/caches-jvm/*
+/build/kotlin/compileKotlin/caches-jvm/*
