@@ -1,17 +1,20 @@
 package com.kerubyte.common.plugins
 
-import io.ktor.routing.*
-import io.ktor.http.*
-import io.ktor.features.*
-import io.ktor.locations.*
+import com.kerubyte.common.domain.DomainProvider
+import com.kerubyte.feature.product.productsRoute
 import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
+import io.ktor.locations.*
+import io.ktor.routing.*
+import org.koin.ktor.ext.inject
+
 
 fun Application.configureRouting() {
-    
-    install(Locations) {
-    }
+
+    val domainProvider by inject<DomainProvider>()
+
+    install(Locations)
+
     routing {
+        productsRoute(domainProvider)
     }
 }

@@ -1,5 +1,6 @@
 package com.kerubyte
 
+import com.kerubyte.common.plugins.configureDependencyInjection
 import com.kerubyte.common.plugins.configureMonitoring
 import com.kerubyte.common.plugins.configureRouting
 import com.kerubyte.common.plugins.configureSerialization
@@ -10,7 +11,8 @@ fun main(args: Array<String>): Unit =
 
 @Suppress("unused")
 fun Application.module() {
-    configureRouting()
     configureSerialization()
+    configureDependencyInjection()
+    configureRouting()
     configureMonitoring()
 }
