@@ -1,5 +1,6 @@
 package com.kerubyte.common.plugins
 
+import com.kerubyte.di.auth.jwtModule
 import com.kerubyte.di.database.databaseModule
 import com.kerubyte.di.domain.domainModule
 import com.kerubyte.di.repository.repositoryModule
@@ -11,6 +12,7 @@ fun Application.configureDependencyInjection() {
     install(Koin) {
         modules(
             databaseModule,
+            jwtModule,
             serviceModule,
             repositoryModule,
             domainModule
