@@ -9,4 +9,4 @@
 /build/kotlin/compileKotlin/caches-jvm/*
 /build/
 /src/main/resources/
-/src/main/kotlin/com/kerubyte/common/auth/Config.kt
+/src/main/kotlin/com/kerubyte/common/auth/AuthConfig.kt

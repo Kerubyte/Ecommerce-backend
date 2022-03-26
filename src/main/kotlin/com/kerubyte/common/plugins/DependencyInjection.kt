@@ -11,8 +11,8 @@ import org.koin.ktor.ext.Koin
 fun Application.configureDependencyInjection() {
     install(Koin) {
         modules(
-            databaseModule,
             jwtModule,
+            databaseModule,
             serviceModule,
             repositoryModule,
             domainModule
