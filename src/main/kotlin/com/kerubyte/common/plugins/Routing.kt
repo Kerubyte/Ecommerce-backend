@@ -1,6 +1,7 @@
 package com.kerubyte.common.plugins
 
 import com.kerubyte.common.domain.DomainProvider
+import com.kerubyte.feature.auth.authRoute
 import com.kerubyte.feature.product.productsRoute
 import io.ktor.application.*
 import io.ktor.locations.*
@@ -16,5 +17,6 @@ fun Application.configureRouting() {
 
     routing {
         productsRoute(domainProvider)
+        authRoute(domainProvider)
     }
 }
