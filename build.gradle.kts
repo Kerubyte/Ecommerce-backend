@@ -7,7 +7,7 @@ val kmongo_version: String by project
 plugins {
     application
     kotlin("jvm") version "1.6.10"
-                id("org.jetbrains.kotlin.plugin.serialization") version "1.6.10"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.6.10"
 }
 
 group = "com.kerubyte"
@@ -28,8 +28,14 @@ dependencies {
     implementation("io.ktor:ktor-locations:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
-    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    testImplementation("io.ktor:ktor-server-test-host:$ktor_version")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
+    testImplementation(platform("org.junit:junit-bom:5.8.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.3")
+    testImplementation("io.mockk:mockk:1.12.3")
+    testImplementation("com.google.truth:truth:1.0.1")
+    testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo:3.4.5")
 
     // Koin for Ktor
     implementation("io.insert-koin:koin-core:$koin_version")
@@ -38,7 +44,8 @@ dependencies {
 
     // KMongo
     implementation("org.litote.kmongo:kmongo:$kmongo_version")
-    implementation("org.litote.kmongo:kmongo-coroutine:$kmongo_version")
+    testImplementation("org.litote.kmongo:kmongo-flapdoodle:4.5.1")
+    testImplementation("org.litote.kmongo:kmongo-core-tests:4.5.1")
 
     // Jwt
     implementation("io.ktor:ktor-auth:$ktor_version")
