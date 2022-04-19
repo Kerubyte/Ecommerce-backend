@@ -1,22 +1,20 @@
 package com.kerubyte.di.database
 
 import com.kerubyte.common.database.DatabaseProvider
+import com.kerubyte.common.database.DatabaseProviderImpl
 import com.kerubyte.common.util.CommonConstants.DB_NAME
-import com.kerubyte.feature.product.Product
-import com.kerubyte.feature.user.User
+import com.mongodb.client.MongoClients
+import com.mongodb.client.MongoDatabase
 import org.koin.dsl.module
-import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.reactivestreams.KMongo
 
 val databaseModule = module {
 
-    single {
-        KMongo.createClient()
-            .coroutine
+    single<MongoDatabase> {
+        MongoClients.create()
             .getDatabase(DB_NAME)
     }
 
-    single {
-        DatabaseProvider(get())
+    single<DatabaseProvider> {
+        DatabaseProviderImpl(get())
     }
 }
