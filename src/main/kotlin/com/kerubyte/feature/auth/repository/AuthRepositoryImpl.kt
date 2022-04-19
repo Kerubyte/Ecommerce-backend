@@ -39,13 +39,13 @@ class AuthRepositoryImpl(
                 }
                 false -> {
                     val userIdFromEmail = getHashFromString(authRequest.email).toId<User>()
-                    //val hashFromPassword = getHashFromString(authRequest.password!!) TODO()
+                    val hashFromPassword = getHashFromString(authRequest.password!!)
                     val user = User(
                         userIdFromEmail,
                         authRequest.firstName,
                         authRequest.lastName,
                         authRequest.email,
-                        authRequest.password
+                        hashFromPassword
                     )
                     val isAcknowledged = userApiService.insertUser(user)
                     when {
@@ -53,7 +53,7 @@ class AuthRepositoryImpl(
                             val token = jwtAuthConfig.generateToken(user.id.toString())
                             RootResponse.SuccessResponse(
                                 HttpStatusCode.Created,
-                                token,
+                                Pair(user.id.toString(), token),
                                 USER_CREATED
                             )
                         }
@@ -91,7 +91,7 @@ class AuthRepositoryImpl(
                     val token = jwtAuthConfig.generateToken(user.id.toString())
                     RootResponse.SuccessResponse(
                         HttpStatusCode.OK,
-                        token,
+                        Pair(user.id.toString(), token),
                         USER_LOGGED_IN
                     )
                 }
