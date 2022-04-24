@@ -14,12 +14,12 @@ fun Route.authRoute(domainProvider: DomainProvider) {
     post<RegisterUser> {
         val authRequest = call.receive<AuthRequest>()
         val response = domainProvider.provideRegisterUserWithTokenUseCase().invoke(authRequest)
-        call.respond(response.statusCode, response)
+        call.respond(status = response.first, message = response.second)
     }
 
     post<LoginUser> {
         val loginRequest = call.receive<LoginRequest>()
         val response = domainProvider.provideLoginUserWithTokenUseCase().invoke(loginRequest)
-        call.respond(response.statusCode, response)
+        call.respond(status = response.first, message = response.second)
     }
 }

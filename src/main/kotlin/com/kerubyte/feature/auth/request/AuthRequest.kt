@@ -6,10 +6,27 @@ data class AuthRequest(
     val email: String?,
     val password: String?
 ) {
-    fun isValidRequest(): Boolean {
-        return !firstName.isNullOrEmpty() &&
-                !lastName.isNullOrEmpty() &&
-                !email.isNullOrEmpty() &&
-                !password.isNullOrEmpty()
+    fun validateRequest(): ValidatedAuthRequest? {
+        return if (!firstName.isNullOrEmpty() &&
+            !lastName.isNullOrEmpty() &&
+            !email.isNullOrEmpty() &&
+            !password.isNullOrEmpty()
+        ) {
+            ValidatedAuthRequest(
+                firstName = firstName,
+                lastName = lastName,
+                email = email,
+                password = password
+            )
+        } else {
+            null
+        }
     }
 }
+
+data class ValidatedAuthRequest(
+    val firstName: String,
+    val lastName: String,
+    val email: String,
+    val password: String
+)

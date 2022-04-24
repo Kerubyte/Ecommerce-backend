@@ -20,91 +20,107 @@ class AuthRepositoryImpl(
     private val jwtAuthConfig: AuthConfig,
     private val userApiService: UserApiService
 ) : AuthRepository {
-
-    override suspend fun registerUserWithToken(input: AuthRequest?): RootResponse<Any> {
+    override suspend fun registerUserWithToken(input: AuthRequest?): Pair<HttpStatusCode, RootResponse<Any>> {
         return input?.let { authRequest ->
-            if (!authRequest.isValidRequest()) {
-                return RootResponse.ErrorResponse(
-                    HttpStatusCode.BadRequest,
-                    INCORRECT_REQUEST
-                )
-            }
 
-            return when (checkIfUserExists(authRequest.email!!)) {
-                true -> {
-                    RootResponse.ErrorResponse(
-                        HttpStatusCode.Conflict,
-                        USER_EXISTS
-                    )
-                }
-                false -> {
-                    val userIdFromEmail = getHashFromString(authRequest.email).toId<User>()
-                    val hashFromPassword = getHashFromString(authRequest.password!!)
-                    val user = User(
-                        userIdFromEmail,
-                        authRequest.firstName,
-                        authRequest.lastName,
-                        authRequest.email,
-                        hashFromPassword
-                    )
-                    val isAcknowledged = userApiService.insertUser(user)
-                    when {
-                        isAcknowledged -> {
-                            val token = jwtAuthConfig.generateToken(user.id.toString())
-                            RootResponse.SuccessResponse(
-                                HttpStatusCode.Created,
-                                Pair(user.id.toString(), token),
-                                USER_CREATED
+            authRequest.validateRequest()?.let { (firstName, lastName, email, password) ->
+
+                return when (checkIfUserExists(email)) {
+                    true -> {
+                        Pair(
+                            HttpStatusCode.Conflict,
+                            RootResponse.ErrorResponse(
+                                message = USER_EXISTS
+                            )
+                        )
+                    }
+                    false -> {
+                        val user = User(
+                            id = getHashFromString(email).toId(),
+                            firstName = firstName,
+                            lastName = lastName,
+                            email = email,
+                            passwordHash = getHashFromString(password)
+                        )
+
+                        val isAcknowledged = userApiService.insertUser(user)
+                        when {
+                            isAcknowledged -> {
+                                val token = jwtAuthConfig.generateToken(user.id.toString())
+                                Pair(
+                                    HttpStatusCode.Created,
+                                    RootResponse.SuccessResponse(
+                                        message = USER_CREATED,
+                                        data = token
+                                    )
+                                )
+                            }
+                            else -> Pair(
+                                HttpStatusCode.BadRequest,
+                                RootResponse.ErrorResponse(
+                                    message = INCORRECT_REQUEST
+                                )
                             )
                         }
-                        else ->
-                            RootResponse.ErrorResponse(
-                                HttpStatusCode.BadRequest,
-                                INCORRECT_REQUEST
-                            )
                     }
                 }
-            }
-        } ?: RootResponse.ErrorResponse(
+            } ?: Pair(
+                HttpStatusCode.BadRequest,
+                RootResponse.ErrorResponse(
+                    message = INCORRECT_REQUEST
+                )
+            )
+        } ?: Pair(
             HttpStatusCode.BadRequest,
-            INCORRECT_REQUEST
+            RootResponse.ErrorResponse(
+                message = INCORRECT_REQUEST
+            )
         )
     }
 
-    override suspend fun loginUserWithToken(input: LoginRequest?): RootResponse<Any> {
-        input?.let { loginRequest ->
-            if (!loginRequest.isValidRequest()) {
-                return RootResponse.ErrorResponse(
-                    HttpStatusCode.BadRequest,
-                    INCORRECT_REQUEST
-                )
-            }
+    override suspend fun loginUserWithToken(input: LoginRequest?): Pair<HttpStatusCode, RootResponse<Any>> {
+        return input?.let { loginRequest ->
 
-            val user = userApiService.findUserByEmail(loginRequest.email!!)
-                ?: return RootResponse.ErrorResponse(
+            loginRequest.validateRequest()?.let { (email, password) ->
+
+                val user = userApiService.findUserByEmail(email) ?: return Pair(
                     HttpStatusCode.Unauthorized,
-                    WRONG_CREDENTIALS
-                )
-            val isPasswordMatch = isPasswordHashMatch(loginRequest.password!!, user.password!!)
-            return when {
-                isPasswordMatch -> {
-                    val token = jwtAuthConfig.generateToken(user.id.toString())
-                    RootResponse.SuccessResponse(
-                        HttpStatusCode.OK,
-                        Pair(user.id.toString(), token),
-                        USER_LOGGED_IN
-                    )
-                }
-                else -> {
                     RootResponse.ErrorResponse(
-                        HttpStatusCode.Unauthorized,
-                        WRONG_CREDENTIALS
+                        message = WRONG_CREDENTIALS
                     )
+                )
+                val isPasswordMatch = isPasswordHashMatch(password, user.passwordHash)
+                return when {
+                    isPasswordMatch -> {
+                        val token = jwtAuthConfig.generateToken(user.id.toString())
+                        Pair(
+                            HttpStatusCode.OK,
+                            RootResponse.SuccessResponse(
+                                message = USER_LOGGED_IN,
+                                data = token
+                            )
+                        )
+                    }
+                    else -> {
+                        Pair(
+                            HttpStatusCode.Unauthorized,
+                            RootResponse.ErrorResponse(
+                                message = WRONG_CREDENTIALS
+                            )
+                        )
+                    }
                 }
-            }
-        } ?: return RootResponse.ErrorResponse(
+            } ?: Pair(
+                HttpStatusCode.BadRequest,
+                RootResponse.ErrorResponse(
+                    message = INCORRECT_REQUEST
+                )
+            )
+        } ?: return Pair(
             HttpStatusCode.BadRequest,
-            INCORRECT_REQUEST
+            RootResponse.ErrorResponse(
+                message = INCORRECT_REQUEST
+            )
         )
     }
 

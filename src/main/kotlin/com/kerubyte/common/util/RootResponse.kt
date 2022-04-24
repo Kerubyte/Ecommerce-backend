@@ -1,21 +1,16 @@
 package com.kerubyte.common.util
 
-import io.ktor.http.*
-
 sealed class RootResponse<T : Any>(
-    val statusCode: HttpStatusCode,
-    val data: T? = null,
-    val message: String? = null
+    val message: String? = null,
+    val data: T? = null
 ) {
 
     class SuccessResponse<T : Any>(
-        statusCode: HttpStatusCode,
-        data: T? = null,
-        message: String? = null
-    ) : RootResponse<T>(statusCode, data, message)
+        message: String? = null,
+        data: T? = null
+    ) : RootResponse<T>(message, data)
 
     class ErrorResponse<T : Any>(
-        statusCode: HttpStatusCode,
         message: String? = null
-    ) : RootResponse<T>(statusCode, message = message)
+    ) : RootResponse<T>(message = message)
 }

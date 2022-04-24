@@ -6,18 +6,25 @@ import org.litote.kmongo.Id
 data class User(
     @BsonId
     val id: Id<User>,
-    val firstName: String? = null,
-    val lastName: String? = null,
-    val email: String? = null,
-    val password: String? = null
+    val firstName: String,
+    val lastName: String,
+    val email: String,
+    val passwordHash: String
 ) {
-    fun asResponse(): User {
-        return User(
-            id,
-            firstName,
-            lastName,
-            email,
-            null
+    fun asDTO(): UserDTO {
+        return UserDTO(
+            id = id,
+            firstName = firstName,
+            lastName = lastName,
+            email = email
         )
     }
 }
+
+data class UserDTO(
+    @BsonId
+    val id: Id<User>,
+    val firstName: String,
+    val lastName: String,
+    val email: String,
+)
