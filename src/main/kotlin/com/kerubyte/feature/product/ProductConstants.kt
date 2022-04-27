@@ -2,9 +2,9 @@ package com.kerubyte.feature.product
 
 object ProductConstants {
 
-    const val PRODUCTS = "/products"
-    const val PRODUCT_BY_ID = "/products/{id}"
-    const val SEARCH_PRODUCTS_BY_ID = "/products/search"
+    const val PRODUCTS = "/api/products"
+    const val PRODUCT_BY_ID = "/api/products/{id}"
+    const val SEARCH_PRODUCTS_BY_ID = "/api/products/search"
 
     // Error Constants for ProductRepository
     const val CONTENT_NOT_FOUND = "Requested content not found"

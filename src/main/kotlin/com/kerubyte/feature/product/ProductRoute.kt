@@ -17,20 +17,20 @@ fun Route.productsRoute(domainProvider: DomainProvider) {
     get<Products> {
 
         val response = domainProvider.provideGetProductsUseCase().invoke()
-        call.respond(response.statusCode, response)
+        call.respond(status = response.first, message = response.second)
     }
 
     get<ProductById> { request ->
 
         val productId = request.id.toId<Product>()
         val response = domainProvider.provideGetProductByIdUseCase().invoke(productId)
-        call.respond(response.statusCode, response)
+        call.respond(status = response.first, message = response.second)
     }
 
     post<SearchProductById> {
 
-        val productIds = call.receiveOrNull<List<Id<Product>>>().orEmpty()
-        val response = domainProvider.provideSearchProductsByIdUseCase().invoke(productIds)
-        call.respond(response.statusCode, response)
+        val productSearchRequest = call.receive<SearchRequest>()
+        val response = domainProvider.provideSearchProductsByIdUseCase().invoke(productSearchRequest)
+        call.respond(status = response.first, message = response.second)
     }
 }

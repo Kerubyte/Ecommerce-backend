@@ -1,5 +1,8 @@
 package com.kerubyte.feature.auth.request
 
+import com.kerubyte.common.util.isValidEmail
+import com.kerubyte.common.util.isValidPassword
+
 data class AuthRequest(
     val firstName: String?,
     val lastName: String?,
@@ -7,16 +10,16 @@ data class AuthRequest(
     val password: String?
 ) {
     fun validateRequest(): ValidatedAuthRequest? {
-        return if (!firstName.isNullOrEmpty() &&
-            !lastName.isNullOrEmpty() &&
-            !email.isNullOrEmpty() &&
-            !password.isNullOrEmpty()
+        return if (!firstName.isNullOrBlank() &&
+            !lastName.isNullOrBlank() &&
+            email.isValidEmail() &&
+            password.isValidPassword()
         ) {
             ValidatedAuthRequest(
                 firstName = firstName,
                 lastName = lastName,
-                email = email,
-                password = password
+                email = email!!,
+                password = password!!
             )
         } else {
             null

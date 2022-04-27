@@ -1,23 +1,24 @@
 package com.kerubyte.feature.product.service
 
+import com.kerubyte.common.database.DatabaseProvider
+import com.kerubyte.common.database.DatabaseProviderImpl
 import com.kerubyte.feature.product.Product
 import org.litote.kmongo.Id
+import org.litote.kmongo.findOneById
 import org.litote.kmongo.`in`
-import org.litote.kmongo.coroutine.CoroutineCollection
 
 class ProductApiServiceImpl(
-    private val productsCollection: CoroutineCollection<Product>
+    private val databaseProvider: DatabaseProvider
 ) : ProductApiService {
-
     override suspend fun getAllProducts(): List<Product> {
-        return productsCollection.find().toList()
+        return databaseProvider.provideProductCollection().find().toList()
     }
 
     override suspend fun getProductById(input: Id<Product>): Product? {
-        return productsCollection.findOneById(input)
+        return databaseProvider.provideProductCollection().findOneById(input)
     }
 
     override suspend fun searchProductsById(input: List<Id<Product>>): List<Product> {
-        return productsCollection.find(Product::_id `in` input).toList()
+        return databaseProvider.provideProductCollection().find(Product::_id `in` input).toList()
     }
 }

@@ -11,6 +11,7 @@ import com.kerubyte.feature.auth.AuthConstants.USER_LOGGED_IN
 import com.kerubyte.feature.auth.AuthConstants.WRONG_CREDENTIALS
 import com.kerubyte.feature.auth.request.AuthRequest
 import com.kerubyte.feature.auth.request.LoginRequest
+import com.kerubyte.feature.auth.request.ValidatedAuthRequest
 import com.kerubyte.feature.user.User
 import com.kerubyte.feature.user.service.UserApiService
 import io.ktor.http.*
@@ -23,9 +24,9 @@ class AuthRepositoryImpl(
     override suspend fun registerUserWithToken(input: AuthRequest?): Pair<HttpStatusCode, RootResponse<Any>> {
         return input?.let { authRequest ->
 
-            authRequest.validateRequest()?.let { (firstName, lastName, email, password) ->
+            authRequest.validateRequest()?.let { validatedRequest ->
 
-                return when (checkIfUserExists(email)) {
+                return when (checkIfUserExists(validatedRequest.email)) {
                     true -> {
                         Pair(
                             HttpStatusCode.Conflict,
@@ -35,13 +36,7 @@ class AuthRepositoryImpl(
                         )
                     }
                     false -> {
-                        val user = User(
-                            id = getHashFromString(email).toId(),
-                            firstName = firstName,
-                            lastName = lastName,
-                            email = email,
-                            passwordHash = getHashFromString(password)
-                        )
+                        val user = createUser(validatedRequest)
 
                         val isAcknowledged = userApiService.insertUser(user)
                         when {
@@ -126,5 +121,15 @@ class AuthRepositoryImpl(
 
     private suspend fun checkIfUserExists(email: String): Boolean {
         return userApiService.findUserByEmail(email) != null
+    }
+
+    private fun createUser(validatedRequest: ValidatedAuthRequest): User {
+        return User(
+            id = getHashFromString(validatedRequest.email).toId(),
+            firstName = validatedRequest.firstName,
+            lastName = validatedRequest.lastName,
+            email = validatedRequest.email,
+            passwordHash = getHashFromString(validatedRequest.password)
+        )
     }
 }

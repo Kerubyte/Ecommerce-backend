@@ -5,8 +5,8 @@ data class LoginRequest(
     val password: String?
 ) {
     fun validateRequest(): ValidatedLoginRequest? {
-        return if (!email.isNullOrEmpty() &&
-            !password.isNullOrEmpty()
+        return if (!email.isNullOrBlank() &&
+            !password.isNullOrBlank()
         ) {
             ValidatedLoginRequest(
                 email = email,
